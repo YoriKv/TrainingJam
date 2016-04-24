@@ -153,10 +153,10 @@ MonoBehaviour:
     normals: []
     tangents: []
     uvs:
-    - {x: 0.836915, y: 0.29687548}
-    - {x: 0.90136623, y: 0.29687548}
-    - {x: 0.836915, y: 0.31152296}
-    - {x: 0.90136623, y: 0.31152296}
+    - {x: 0.86230564, y: 0.29687548}
+    - {x: 0.92675686, y: 0.29687548}
+    - {x: 0.86230564, y: 0.31152296}
+    - {x: 0.92675686, y: 0.31152296}
     normalizedUvs:
     - {x: 0, y: 0}
     - {x: 1, y: 0}
@@ -341,14 +341,14 @@ MonoBehaviour:
     normals: []
     tangents: []
     uvs:
-    - {x: 0.9052744, y: 0.29687548}
-    - {x: 0.9355459, y: 0.29687548}
-    - {x: 0.9052744, y: 0.31689405}
-    - {x: 0.9355459, y: 0.31689405}
+    - {x: 0.5957041, y: 0.28173876}
+    - {x: 0.5957041, y: 0.29687452}
+    - {x: 0.63574123, y: 0.28173876}
+    - {x: 0.63574123, y: 0.29687452}
     normalizedUvs:
     - {x: 0, y: 0}
-    - {x: 1, y: 0}
     - {x: 0, y: 1}
+    - {x: 1, y: 0}
     - {x: 1, y: 1}
     indices: 000000000300000001000000020000000300000000000000
     material: {fileID: 2100000, guid: 8b4ddaaab3e08fc4b81faa012319aa1e, type: 2}
@@ -359,7 +359,7 @@ MonoBehaviour:
     regionY: 0
     regionW: 0
     regionH: 0
-    flipped: 0
+    flipped: 1
     complexGeometry: 0
     physicsEngine: 0
     colliderType: 0
@@ -795,6 +795,53 @@ MonoBehaviour:
     polygonCollider2D: []
     edgeCollider2D: []
     attachPoints: []
+  - name: cannonball
+    boundsData:
+    - {x: 0, y: 0, z: 0}
+    - {x: 0.22, y: 0.22, z: 0}
+    untrimmedBoundsData:
+    - {x: 0, y: 0, z: 0}
+    - {x: 0.22, y: 0.22, z: 0}
+    texelSize: {x: 0.01, y: 0.01}
+    positions:
+    - {x: -0.11, y: -0.11, z: 0}
+    - {x: 0.11, y: -0.11, z: 0}
+    - {x: -0.11, y: 0.11, z: 0}
+    - {x: 0.11, y: 0.11, z: 0}
+    normals: []
+    tangents: []
+    uvs:
+    - {x: 0.836915, y: 0.29443407}
+    - {x: 0.8583975, y: 0.29443407}
+    - {x: 0.836915, y: 0.3051753}
+    - {x: 0.8583975, y: 0.3051753}
+    normalizedUvs:
+    - {x: 0, y: 0}
+    - {x: 1, y: 0}
+    - {x: 0, y: 1}
+    - {x: 1, y: 1}
+    indices: 000000000300000001000000020000000300000000000000
+    material: {fileID: 2100000, guid: 8b4ddaaab3e08fc4b81faa012319aa1e, type: 2}
+    materialId: 0
+    sourceTextureGUID: 99c4bb219e20542419e018aa58ee6e47
+    extractRegion: 0
+    regionX: 0
+    regionY: 0
+    regionW: 0
+    regionH: 0
+    flipped: 0
+    complexGeometry: 0
+    physicsEngine: 0
+    colliderType: 0
+    customColliders: []
+    colliderVertices: []
+    colliderIndicesFwd: 
+    colliderIndicesBack: 
+    colliderConvex: 0
+    colliderSmoothSphereCollisions: 0
+    polygonCollider2D: []
+    edgeCollider2D: []
+    attachPoints: []
   premultipliedAlpha: 0
   material: {fileID: 0}
   materials:
@@ -812,7 +859,7 @@ MonoBehaviour:
   loadable: 0
   invOrthoSize: 2
   halfTargetHeight: 50
-  buildKey: 2041033205
+  buildKey: 527500662
   dataGuid: bdb2a40567d40be4192664100a0d9ee2
   managedSpriteCollection: 0
   hasPlatformData: 0

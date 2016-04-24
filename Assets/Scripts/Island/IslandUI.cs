@@ -12,6 +12,11 @@ public class IslandUI:MonoBehaviour {
     public Image warningImage;
     public Image tagImage;
 
+    public GameObject exploreButton;
+    public GameObject pirateButton;
+    public Button exitButton;
+    public Text exitText;
+
     public RectTransform exitPanel;
 
     public Sprite needSprite;
@@ -49,12 +54,13 @@ public class IslandUI:MonoBehaviour {
     public void ShowWarning() {
         Island.interactable = false;
         authorizedPirateText.text = "Call Authorized Pirate";
+        exitButton.gameObject.SetActive(false);
         warningPanel.gameObject.SetActive(true);
     }
 
     public void CallPirate() {
         if(!needsPirate) {
-            FailedUI.Fail("Uneccessarily called the authorized pirate.");
+            FailedUI.Fail("Uneccessarily called the authorized pirate. They tripped and hurt themselves running over.");
         } else if(!calledPirate && _authorizedPirateTimer <= 0f) {
             Island.I.paused = true;
             // Start timer
@@ -69,21 +75,38 @@ public class IslandUI:MonoBehaviour {
         }
         _authorizedPirateTimer = 0f;
         warningPanel.gameObject.SetActive(false);
+        exitButton.gameObject.SetActive(true);
         Island.I.paused = false;
         Island.interactable = true;
     }
 
     public void ShowExit() {
         Island.interactable = false;
+        if(needsPirate) {
+            exitText.text = "Call Authorized Pirate";
+        } else {
+            exitText.text = "Clean Up Evidence";
+        }
+
+        exploreButton.SetActive(false);
+        pirateButton.SetActive(false);
         exitPanel.gameObject.SetActive(true);
     }
 
     public void Tagout() {
         Island.I.exitConfirmed = true;
-        HideExit();
+        exitButton.interactable = false;
+        if(needsPirate) {
+            tagImage.gameObject.SetActive(false);
+            exitText.text = "Removing Tags/Locks...";
+        } else {
+            exitText.text = "Cleaning Up...";
+        }
     }
 
     public void HideExit() {
+        exploreButton.SetActive(true);
+        pirateButton.SetActive(true);
         exitPanel.gameObject.SetActive(false);
         Island.interactable = true;
     }

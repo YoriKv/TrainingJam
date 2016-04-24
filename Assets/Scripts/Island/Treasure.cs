@@ -20,9 +20,12 @@ public class Treasure:MonoBehaviour {
         _chestPunchTween = chest.transform.DOPunchScale(new Vector3(0.2f, 0.4f), 0.2f).SetAutoKill(false).Pause();
     }
 
-    private void CheckValue() {
+    public void CheckValue() {
         // Check fade out
         if(value == 0) {
+            // Mark ourselves as collected
+            Island.I.TreasureCollected(this);
+            // Remove ourselves
             value = -1;
             if(chest.isActiveAndEnabled) {
                 glow.gameObject.SetActive(false);

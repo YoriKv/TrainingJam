@@ -501,6 +501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adf7c1984d8904242b4a89ee7b8a1f39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cannonballPrefab: {fileID: 11430154, guid: 823dbb96728a9194dbf8f97231f1d505, type: 2}
   paused: 0
   ship: {fileID: 0}
   islandUI: {fileID: 0}

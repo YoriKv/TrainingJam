@@ -117,7 +117,7 @@ public class LocationManager:MonoBehaviour {
     }
 
     public static void Enter_Confirm() {
-        if(_instance._fsm.State == States.Enter) {
+        if(_instance != null && _instance._fsm.State == States.Enter) {
             _instance._fsm.ChangeState(States.Present);
         }
     }
@@ -145,7 +145,7 @@ public class LocationManager:MonoBehaviour {
     }
 
     public static void Exit_Confirm() {
-        if(_instance._fsm.State == States.Exit) {
+        if(_instance != null && _instance._fsm.State == States.Exit) {
             _instance._fsm.ChangeState(States.Away);
         }
     }

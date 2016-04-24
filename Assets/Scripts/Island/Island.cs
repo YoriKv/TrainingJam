@@ -7,10 +7,15 @@ using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class Island:MonoBehaviour {
+    private const float EXIT_TIME = 20f;
+    private const float WARNING_TIME = 20f;
+
     public static int totalValue;
     public static bool interactable = false;
 
     public static Island I = null;
+
+    public Cannonball cannonballPrefab;
 
     public bool paused = false;
 
@@ -37,6 +42,7 @@ public class Island:MonoBehaviour {
         }
     }
 
+    private int _availableValue;
     private int _collectedValue;
     public int collectedValue {
         get { return _collectedValue; }
@@ -48,6 +54,8 @@ public class Island:MonoBehaviour {
 
     public Ship ship;
     public IslandUI islandUI;
+
+    private List<Treasure> treasures;
 
     public Treasure treasurePrefab;
     public WarningSign warningSignPrefab;
@@ -72,10 +80,11 @@ public class Island:MonoBehaviour {
         LocationManager.Exit += OnExit;
 
         List<Spawn> spawns;
+        treasures = new List<Treasure>();
         // Split up treasure
         spawns = new List<Spawn>(treasureSpawns.GetComponentsInChildren<Spawn>());
         spawns.Shuffle();
-        List<Treasure> treasures = new List<Treasure>(spawns.Count);
+        treasures = new List<Treasure>(spawns.Count);
         foreach(Spawn spawn in spawns) {
             // Pick value based on leftover value
             int value;
@@ -117,7 +126,7 @@ public class Island:MonoBehaviour {
             // Didn't clear the warning
             StartCoroutine(Leave());
         } else {
-            _exitTimer = 10f;
+            _exitTimer = EXIT_TIME;
             islandUI.ShowExit();
         }
     }
@@ -130,7 +139,7 @@ public class Island:MonoBehaviour {
         // Arrive
         ship.Arrive();
         // Leave after timeout
-        _warningTimer = 10f;
+        _warningTimer = WARNING_TIME;
     }
 
     public void Update() {
@@ -157,6 +166,25 @@ public class Island:MonoBehaviour {
         if(_warningTimer <= 0f && _exitTimer <= 0f) {
             islandUI.timerText.text = "";
         }
+
+        if(Input.touchCount == 3 || Input.GetKeyUp(KeyCode.C)) {
+            if(collectedValue > 0 && treasures.Count > 0) {
+                // Spawn cannon balls
+                SpawnCannonball();
+            }
+        }
+    }
+
+    private void SpawnCannonball() {
+        // Pick a treasure
+        Treasure target = treasures.PickRandom();
+        Cannonball cb = Instantiate(cannonballPrefab);
+        cb.transform.position = new Vector3(5f, Random.Range(-3f, 3f));
+        cb.Launch(target);
+    }
+
+    public void TreasureCollected(Treasure t) {
+        treasures.Remove(t);
     }
 
     public void ShowWarning() {
@@ -181,9 +209,9 @@ public class Island:MonoBehaviour {
         // Back to location manager
         if(warningPresent) {
             // Failed
-            FailedUI.Fail("Didn't explore the island, your crew is mad at the lost gold.");
+            FailedUI.Fail("Didn't explore the island, your crew is mad at you for the lost gold.");
         } else if(!exitConfirmed) {
-            FailedUI.Fail("Didn't remove the island trap tags, the navy finds you with the evidence left behind.");
+            FailedUI.Fail("Didn't remove the island trap tags, the navy finds you using the evidence left behind.");
         } else {
             // Succeeded
             GM.gold += collectedValue;

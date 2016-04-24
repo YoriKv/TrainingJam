@@ -271,7 +271,7 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3396300, guid: fc9d55ef7ab572c4292dac5d70a23cfb, type: 2}
+    - target: {fileID: 3316808, guid: fc9d55ef7ab572c4292dac5d70a23cfb, type: 2}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
@@ -283,7 +283,7 @@ Prefab:
       propertyPath: islandUI
       value: 
       objectReference: {fileID: 1974811349}
-    - target: {fileID: 3316808, guid: fc9d55ef7ab572c4292dac5d70a23cfb, type: 2}
+    - target: {fileID: 3396300, guid: fc9d55ef7ab572c4292dac5d70a23cfb, type: 2}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
@@ -331,7 +331,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
---- !u!1001 &1974811348
+--- !u!1001 &1716412042
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -417,7 +417,7 @@ Prefab:
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 11415758, guid: 284cfa986c42d0240b663812511ba2d2,
     type: 2}
-  m_PrefabInternal: {fileID: 1974811348}
+  m_PrefabInternal: {fileID: 1716412042}
   m_Script: {fileID: 11500000, guid: e27fdf98904bb1c45bb710a63d9c939f, type: 3}
 --- !u!1001 &2027093555
 Prefab:
