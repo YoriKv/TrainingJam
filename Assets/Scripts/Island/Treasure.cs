@@ -81,7 +81,7 @@ public class Treasure:MonoBehaviour {
             _pilePunchTween.Restart();
             _chestPunchTween.Restart();
             // Gold
-            int v = Mathf.Min(10, value);
+            int v = Mathf.Min(5, value);
             value -= v;
             Island.I.collectedValue += v;
             // Coin

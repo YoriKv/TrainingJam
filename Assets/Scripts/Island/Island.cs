@@ -55,7 +55,6 @@ public class Island:MonoBehaviour {
     public Transform treasureSpawns;
     public Transform warningSignSpawns;
 
-    private List<Treasure> _treasures;
     private WarningSign _warningSign;
 
     private float _warningTimer = 0f;
@@ -76,7 +75,7 @@ public class Island:MonoBehaviour {
         // Split up treasure
         spawns = new List<Spawn>(treasureSpawns.GetComponentsInChildren<Spawn>());
         spawns.Shuffle();
-        _treasures = new List<Treasure>(spawns.Count);
+        List<Treasure> treasures = new List<Treasure>(spawns.Count);
         foreach(Spawn spawn in spawns) {
             // Pick value based on leftover value
             int value;
@@ -87,14 +86,16 @@ public class Island:MonoBehaviour {
             else
                 value = totalValue;
             // Spawn
-            Treasure treasure = Instantiate(treasurePrefab);
-            treasure.value = value;
-            treasure.transform.SetParent(transform, false);
-            treasure.transform.position = spawn.transform.position;
-            // Add to list
-            _treasures.Add(treasure);
-            // Subtract value
-            totalValue -= value;
+            if(totalValue > 0) {
+                Treasure treasure = Instantiate(treasurePrefab);
+                treasure.value = value;
+                treasure.transform.SetParent(transform, false);
+                treasure.transform.position = spawn.transform.position;
+                // Add to list
+                treasures.Add(treasure);
+                // Subtract value
+                totalValue -= value;
+            }
         }
 
         // Warning sign
