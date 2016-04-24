@@ -5,8 +5,8 @@ using MonsterLove.StateMachine;
 using UnityEngine.UI;
 
 public class LocationManager:MonoBehaviour {
-    public static bool paused = false;
     public static Location location = Location.Away;
+
     public enum Location {
         Away,
         Present
@@ -14,14 +14,12 @@ public class LocationManager:MonoBehaviour {
 
     public static event Action Enter;
     public static event Action Exit;
-    public static event Action Failed;
 
     public enum States {
         Away,
         Enter,
         Present,
-        Exit,
-        Failed
+        Exit
     }
 
     // Debug
@@ -40,12 +38,9 @@ public class LocationManager:MonoBehaviour {
     private float _updateTimer = UPDATE_LOCATION_TIME;
 
     private float _flipDelay = 1f;
+    private bool _paused;
 
     public void Awake() {
-        if(_instance != null) {
-            Destroy(gameObject);
-            return;
-        }
         // Singleton
         _instance = this;
         DontDestroyOnLoad(gameObject);
@@ -58,17 +53,26 @@ public class LocationManager:MonoBehaviour {
         _fsm.ChangeState(States.Away);
     }
 
+    public void OnLevelWasLoaded(int level) {
+        GameObject go = GameObject.Find("DebugText");
+        if(go != null) {
+            debugText = go.GetComponent<Text>();
+        } else {
+            debugText = null;
+        }
+    }
+
     public void Update() {
-        if(!paused) {
-            if(SignalToState(_signalValue) != location) {
-                _updateTimer -= Time.deltaTime;
-                if(_updateTimer < 0f) {
+        if(SignalToState(_signalValue) != location) {
+            _updateTimer -= Time.deltaTime;
+            if(_updateTimer < 0f && !_paused) {
+#if !UNITY_EDITOR
                     location = SignalToState(_signalValue);
-                    _updateTimer = UPDATE_LOCATION_TIME;
-                }
-            } else {
+#endif
                 _updateTimer = UPDATE_LOCATION_TIME;
             }
+        } else {
+            _updateTimer = UPDATE_LOCATION_TIME;
         }
 
         // Debug
@@ -76,8 +80,10 @@ public class LocationManager:MonoBehaviour {
             _flipDelay -= Time.deltaTime;
             if(_flipDelay < 0f) {
                 if(location == Location.Away) {
+                    _paused = true;
                     location = Location.Present;
                 } else if(location == Location.Present) {
+                    _paused = false;
                     location = Location.Away;
                 }
                 _flipDelay = 1f;
@@ -91,7 +97,7 @@ public class LocationManager:MonoBehaviour {
 
     public void Away_Update() {
         // Wait for present
-        if(location == Location.Present && !paused) {
+        if(location == Location.Present) {
             // Arrived
             _fsm.ChangeState(States.Enter);
         }
@@ -106,7 +112,7 @@ public class LocationManager:MonoBehaviour {
 
     public void Enter_Update() {
         if(location == Location.Away) {
-            _fsm.ChangeState(States.Failed);
+            _fsm.ChangeState(States.Exit);
         }
     }
 
@@ -133,9 +139,7 @@ public class LocationManager:MonoBehaviour {
 
     public void Exit_Update() {
         if(location == Location.Present) {
-            // Fail and reset
-            if(Failed != null)
-                Failed();
+            // Just reset
             _fsm.ChangeState(States.Away);
         }
     }
@@ -143,27 +147,6 @@ public class LocationManager:MonoBehaviour {
     public static void Exit_Confirm() {
         if(_instance._fsm.State == States.Exit) {
             _instance._fsm.ChangeState(States.Away);
-        }
-    }
-
-    // ******************** AWAY ********************
-
-    public static void ForceFailed() {
-        if(_instance._fsm.State != States.Away) {
-            _instance._fsm.ChangeState(States.Failed);
-        }
-    }
-
-    public void Failed_Enter() {
-        if(Failed != null)
-            Failed();
-    }
-
-    public void Failed_Update() {
-        // Wait for away
-        if(location == Location.Away) {
-            // Arrived
-            _fsm.ChangeState(States.Away);
         }
     }
 

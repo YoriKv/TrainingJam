@@ -12,13 +12,28 @@ public class Island:MonoBehaviour {
 
     public static Island I = null;
 
+    public bool paused = false;
+
+    private bool _exitConfirmed;
+    public bool exitConfirmed {
+        get { return _exitConfirmed; }
+        set {
+            _exitConfirmed = value;
+            if(value) {
+                LocationManager.Exit_Confirm();
+            }
+        }
+    }
+
     private bool _warningPresent;
     public bool warningPresent {
         get { return _warningPresent; }
         set {
             _warningPresent = value;
-            if(!value)
+            if(!value) {
+                LocationManager.Enter_Confirm();
                 _warningTimer = 0f;
+            }
         }
     }
 
@@ -44,6 +59,7 @@ public class Island:MonoBehaviour {
     private WarningSign _warningSign;
 
     private float _warningTimer = 0f;
+    private float _exitTimer = 0f;
 
     public void Awake() {
 #if UNITY_EDITOR
@@ -94,7 +110,15 @@ public class Island:MonoBehaviour {
     }
 
     private void OnExit() {
-        StartCoroutine(Leave());
+        interactable = false;
+        _warningTimer = 0f;
+        if(_warningPresent) {
+            // Didn't clear the warning
+            StartCoroutine(Leave());
+        } else {
+            _exitTimer = 10f;
+            islandUI.ShowExit();
+        }
     }
 
     public IEnumerator Start() {
@@ -105,7 +129,7 @@ public class Island:MonoBehaviour {
         // Arrive
         ship.Arrive();
         // Leave after timeout
-        _warningTimer = 30f;
+        _warningTimer = 10f;
     }
 
     public void Update() {
@@ -113,28 +137,41 @@ public class Island:MonoBehaviour {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        if(_warningTimer > 0f) {
+        if(_warningTimer > 0f && warningPresent && !paused) {
             _warningTimer -= Time.deltaTime;
             if(_warningTimer <= 0f) {
                 StartCoroutine(Leave());
             }
             islandUI.timerText.text = Mathf.RoundToInt(_warningTimer).ToString();
-        } else {
+        }
+
+        if(_exitTimer > 0f) {
+            _exitTimer -= Time.deltaTime;
+            if(_exitTimer <= 0f) {
+                StartCoroutine(Leave());
+            }
+            islandUI.timerText.text = Mathf.RoundToInt(_exitTimer).ToString();
+        }
+
+        if(_warningTimer <= 0f && _exitTimer <= 0f) {
             islandUI.timerText.text = "";
         }
     }
 
     public void ShowWarning() {
-        _warningTimer = 0f;
         islandUI.ShowWarning();
     }
 
     private IEnumerator Leave() {
         const float leaveTime = 5f;
 
+        // Hide UIs
+        islandUI.HideWarning();
+        islandUI.HideExit();
+
         // Leave
         ship.Leave(leaveTime);
-        interactable = true;
+        interactable = false;
 
         // Tween out
         Tween t = transform.DOMoveX(10f, leaveTime).SetEase(Ease.InQuad);
@@ -143,7 +180,9 @@ public class Island:MonoBehaviour {
         // Back to location manager
         if(warningPresent) {
             // Failed
-            SceneManager.LoadScene("Failed");
+            FailedUI.Fail("Didn't explore the island, your crew is mad at the lost gold.");
+        } else if(!exitConfirmed) {
+            FailedUI.Fail("Didn't remove the island trap tags, the navy finds you with the evidence left behind.");
         } else {
             // Succeeded
             GM.gold += collectedValue;
@@ -154,6 +193,7 @@ public class Island:MonoBehaviour {
     }
 
     public void OnDestroy() {
+        LocationManager.Exit -= OnExit;
         I = null;
     }
 }

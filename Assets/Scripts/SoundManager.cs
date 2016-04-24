@@ -12,11 +12,8 @@ public class SoundManager:MonoBehaviour {
     public static SoundManager I {
         get {
             if(instance == null && Application.isPlaying) {
-                // Create container gameobject
-                GameObject smc = new GameObject("SoundManagerContainer");
-                DontDestroyOnLoad(smc); // Persist
-                // Add sound manager as component
-                instance = smc.AddComponent<SoundManager>();
+                // Create sound manager
+                instance = Instantiate(Resources.Load<SoundManager>("SoundManager"));
             }
             return instance;
         }
@@ -39,8 +36,7 @@ public class SoundManager:MonoBehaviour {
     // Init audio sources
     public void Awake() {
         if(instance != null) {
-            Destroy(gameObject);
-            return;
+            Destroy(instance.gameObject);
         }
         instance = this;
         DontDestroyOnLoad(gameObject); // Persist

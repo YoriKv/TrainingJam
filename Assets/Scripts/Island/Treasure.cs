@@ -59,10 +59,10 @@ public class Treasure:MonoBehaviour {
     }
 
     private void Done() {
+        Destroy(gameObject);
         if(Island.I.warningPresent) {
             FailedUI.Fail("Tried to explore the island without proper Lockout/Tagout.");
         }
-        Destroy(gameObject);
     }
 
     public void Update() {
@@ -81,9 +81,9 @@ public class Treasure:MonoBehaviour {
             _pilePunchTween.Restart();
             _chestPunchTween.Restart();
             // Gold
-            int v = Mathf.Min(5, value);
-            Island.I.collectedValue += v;
+            int v = Mathf.Min(10, value);
             value -= v;
+            Island.I.collectedValue += v;
             // Coin
             if(v > 0) {
                 CoinPool.I.PlayNext(transform.position);

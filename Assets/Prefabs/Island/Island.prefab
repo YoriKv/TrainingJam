@@ -501,6 +501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adf7c1984d8904242b4a89ee7b8a1f39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  paused: 0
   ship: {fileID: 0}
   islandUI: {fileID: 0}
   treasurePrefab: {fileID: 11437260, guid: bb39c14950321e5468b15592e5ba3a6a, type: 2}

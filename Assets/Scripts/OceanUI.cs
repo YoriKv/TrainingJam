@@ -17,7 +17,7 @@ public class OceanUI:MonoBehaviour {
     }
 
     private void OnEnter() {
-        Island.totalValue = 300;
+        Island.totalValue = 100 + Mathf.RoundToInt(200f * (GM.limbsRemaining / 4f));
         SceneManager.LoadScene("Island");
     }
 
