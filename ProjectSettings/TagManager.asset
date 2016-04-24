@@ -13,7 +13,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Clickable
   - 
   - 
   - 
@@ -38,6 +38,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Water
+    uniqueID: 707862153
+    locked: 0
+  - name: Island
+    uniqueID: 1913092381
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

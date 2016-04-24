@@ -5,6 +5,7 @@ using MonsterLove.StateMachine;
 using UnityEngine.UI;
 
 public class LocationManager:MonoBehaviour {
+    public static bool paused = false;
     public static Location location = Location.Away;
     public enum Location {
         Away,
@@ -12,15 +13,15 @@ public class LocationManager:MonoBehaviour {
     }
 
     public static event Action Enter;
-    public static event Action<bool> EnterDone;
     public static event Action Exit;
-    public static event Action<bool> ExitDone;
+    public static event Action Failed;
 
     public enum States {
         Away,
         Enter,
         Present,
-        Exit
+        Exit,
+        Failed
     }
 
     // Debug
@@ -33,16 +34,21 @@ public class LocationManager:MonoBehaviour {
     private StateMachine<States> _fsm;
 
     // Location tracker
-    public const float UPDATE_STATE_TIME = 30f;
     private const float UPDATE_LOCATION_TIME = 5f;
     private InternetPlugin _internetPlugin;
     private int _signalValue = 0;
     private float _updateTimer = UPDATE_LOCATION_TIME;
-    private float _stateTimer = UPDATE_STATE_TIME;
+
+    private float _flipDelay = 1f;
 
     public void Awake() {
+        if(_instance != null) {
+            Destroy(gameObject);
+            return;
+        }
         // Singleton
         _instance = this;
+        DontDestroyOnLoad(gameObject);
         // Wifi tracker
         _internetPlugin = InternetPlugin.GetInstance();
         _internetPlugin.setInternetCallbackListener(OnWifiConnect, OnWifiDisconnect, OnWifiSignalStrengthChange);
@@ -53,14 +59,31 @@ public class LocationManager:MonoBehaviour {
     }
 
     public void Update() {
-        if(SignalToState(_signalValue) != location) {
-            _updateTimer -= Time.deltaTime;
-            if(_updateTimer < 0f) {
-                location = SignalToState(_signalValue);
+        if(!paused) {
+            if(SignalToState(_signalValue) != location) {
+                _updateTimer -= Time.deltaTime;
+                if(_updateTimer < 0f) {
+                    location = SignalToState(_signalValue);
+                    _updateTimer = UPDATE_LOCATION_TIME;
+                }
+            } else {
                 _updateTimer = UPDATE_LOCATION_TIME;
             }
+        }
+
+        // Debug
+        if(Input.GetKey(KeyCode.S) || Input.touchCount == 4) {
+            _flipDelay -= Time.deltaTime;
+            if(_flipDelay < 0f) {
+                if(location == Location.Away) {
+                    location = Location.Present;
+                } else if(location == Location.Present) {
+                    location = Location.Away;
+                }
+                _flipDelay = 1f;
+            }
         } else {
-            _updateTimer = UPDATE_LOCATION_TIME;
+            _flipDelay = 1f;
         }
     }
 
@@ -68,7 +91,7 @@ public class LocationManager:MonoBehaviour {
 
     public void Away_Update() {
         // Wait for present
-        if(location == Location.Present) {
+        if(location == Location.Present && !paused) {
             // Arrived
             _fsm.ChangeState(States.Enter);
         }
@@ -77,33 +100,23 @@ public class LocationManager:MonoBehaviour {
     // ******************** ENTER ********************
 
     public void Enter_Enter() {
-        _stateTimer = UPDATE_STATE_TIME;
         if(Enter != null)
             Enter();
     }
 
     public void Enter_Update() {
-        _stateTimer -= Time.deltaTime;
-        if(_stateTimer < 0f || location == Location.Away) {
-            if(EnterDone != null)
-                EnterDone(false);
-            _fsm.ChangeState(States.Present);
+        if(location == Location.Away) {
+            _fsm.ChangeState(States.Failed);
         }
     }
 
     public static void Enter_Confirm() {
         if(_instance._fsm.State == States.Enter) {
-            if(EnterDone != null)
-                EnterDone(true);
             _instance._fsm.ChangeState(States.Present);
         }
     }
 
     // ******************** PRESENT ********************
-
-    public void Present_Enter() {
-        _stateTimer = UPDATE_STATE_TIME;
-    }
 
     public void Present_Update() {
         if(location == Location.Away) {
@@ -114,25 +127,43 @@ public class LocationManager:MonoBehaviour {
     // ******************** EXIT ********************
 
     public void Exit_Enter() {
-        _stateTimer = UPDATE_STATE_TIME;
         if(Exit != null)
             Exit();
     }
 
     public void Exit_Update() {
-        _stateTimer -= Time.deltaTime;
-        if(_stateTimer < 0f || location == Location.Present) {
-            if(ExitDone != null)
-                ExitDone(false);
+        if(location == Location.Present) {
+            // Fail and reset
+            if(Failed != null)
+                Failed();
             _fsm.ChangeState(States.Away);
         }
     }
 
     public static void Exit_Confirm() {
         if(_instance._fsm.State == States.Exit) {
-            if(ExitDone != null)
-                ExitDone(true);
             _instance._fsm.ChangeState(States.Away);
+        }
+    }
+
+    // ******************** AWAY ********************
+
+    public static void ForceFailed() {
+        if(_instance._fsm.State != States.Away) {
+            _instance._fsm.ChangeState(States.Failed);
+        }
+    }
+
+    public void Failed_Enter() {
+        if(Failed != null)
+            Failed();
+    }
+
+    public void Failed_Update() {
+        // Wait for away
+        if(location == Location.Away) {
+            // Arrived
+            _fsm.ChangeState(States.Away);
         }
     }
 

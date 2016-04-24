@@ -19,6 +19,10 @@
 sysinfo.txt
 
 # TK2D
+/Assets/TK2DROOT
+/Assets/TK2DROOT.meta
+/Assets/Demigiant
+/Assets/Demigiant.meta
 -tk2d.asset
 -tk2d.asset.meta
 
